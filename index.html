@@ -33,12 +33,14 @@
             align-items: center;
             padding: 4px 8px;
             margin-bottom: 20px;
+            gap: 10px;
         }
 
         .saludo-texto {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: bold;
             color: var(--text-color);
+            flex: 1;
         }
 
         .user-info-block {
@@ -56,12 +58,24 @@
             padding: 6px 12px;
             border-radius: 20px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            max-width: 180px;
+            overflow: hidden;
         }
 
         .telegram-icon {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             fill: #24A1DE;
+            flex-shrink: 0;
+        }
+
+        #telegram-handle {
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-color);
         }
 
         .reloj-texto {
@@ -148,7 +162,6 @@
             color: var(--button-color);
         }
 
-        /* --- ESTILO DEL MENSAJE DE PROCESAMIENTO --- */
         .info-procesamiento {
             background-color: rgba(255, 152, 0, 0.1);
             border: 1px dashed #ff9800;
@@ -237,7 +250,7 @@
 </head>
 <body>
 
-    <!-- BARRA SUPERIOR DINÁMICA -->
+    <!-- BARRA SUPERIOR DINÁMICA LOGUEADA -->
     <div class="top-bar">
         <div class="saludo-texto" id="saludo-usuario">¡Hola!</div>
         <div class="user-info-block">
@@ -245,7 +258,7 @@
                 <svg class="telegram-icon" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-1-.65-.35-1 .22-1.62.15-.15 2.7-2.48 2.75-2.7.01-.03.01-.14-.06-.2-.07-.06-.17-.04-.25-.02-.11.02-1.83 1.16-5.16 3.42-.49.34-.93.5-1.33.49-.44-.01-1.29-.25-1.92-.45-.77-.25-1.39-.39-1.34-.83.03-.23.35-.46.97-.71 3.8-1.65 6.34-2.74 7.61-3.26 3.61-1.48 4.36-1.74 4.85-1.75.11 0 .35.03.51.16.13.11.17.26.19.37z"/>
                 </svg>
-                <span id="telegram-handle" style="font-size: 0.9rem; font-weight: 600;">@usuario</span>
+                <span id="telegram-handle">Cargando...</span>
             </div>
             <div class="reloj-texto" id="reloj-venezuela">00:00:00</div>
         </div>
@@ -357,7 +370,7 @@
         <div class="info-procesamiento">
             <span style="font-size: 1.5rem;">⏳</span>
             <div>
-                Los pagos son procesados en un plazo de **12 a 48 horas hábiles** directamente a su cuenta bancaria. 🏦
+                Los pagos son procesados en un plazo de <strong>12 a 48 horas hábiles</strong> directamente a su cuenta bancaria. 🏦
             </div>
         </div>
 
@@ -377,8 +390,12 @@
         const TASA_CAMBIO = 45.00;
         let modoCalculo = 'bruto';
         let montoBrutoGlobal = 0.00;
+        
+        // Variables globales para asegurar el tracking del cliente de Telegram
+        let telegramUserHandle = "Usuario Anónimo";
+        let telegramUserId = "000000";
 
-        // --- SALUDO DINÁMICO ---
+        // --- SALUDO Y ASIGNACIÓN DE USUARIO REFORZADA ---
         function inicializarSaludo() {
             const ahora = new Date();
             const hora = ahora.getHours();
@@ -388,15 +405,18 @@
             else if (hora >= 12 && hora < 19) saludo = "¡Buenas tardes!";
             else saludo = "¡Buenas noches!";
 
-            document.getElementById('saludo-usuario').innerText = saludo;
-
+            // Intentar extraer de forma estricta los datos nativos de Telegram
             const user = tg.initDataUnsafe?.user;
             const badgeHandle = document.getElementById('telegram-handle');
 
             if (user) {
-                badgeHandle.innerText = user.username ? `@${user.username}` : `ID: ${user.id}`;
+                telegramUserId = user.id;
+                telegramUserHandle = user.username ? `@${user.username}` : `${user.first_name}`;
+                document.getElementById('saludo-usuario').innerText = `${saludo}, ${user.first_name}!`;
+                badgeHandle.innerText = telegramUserHandle;
             } else {
-                badgeHandle.innerText = "Modo de Prueba";
+                document.getElementById('saludo-usuario').innerText = saludo;
+                badgeHandle.innerText = "Modo Local / PC";
             }
         }
         inicializarSaludo();
@@ -437,7 +457,7 @@
             let segundos = ahora.getSeconds();
 
             horas = horas < 10 ? '0' + horas : horas;
-            minutos = minutos < 10 ? '0' + minutos : minutes;
+            minutos = minutos < 10 ? '0' + minutos : minutos;
             segundos = segundos < 10 ? '0' + segundos : segundos;
 
             document.getElementById('reloj-venezuela').innerText = `${horas}:${minutos}:${segundos}`;
@@ -527,7 +547,7 @@
         });
 
         // =========================================================================
-        // 📩 FUNCIÓN DE REPORTE MANUAL PARA TARJETAS / RESPALDO
+        // 📩 FUNCIÓN DE REPORTE MANUAL PARA TARJETAS / RESPALDO LOGUEADO
         // =========================================================================
         function reportarPagoTarjetaManual() {
             if (montoBrutoGlobal <= 0) {
@@ -555,7 +575,7 @@
             const datosParaTelegram = {
                 estatus: "PAGO_CONFIRMADO",
                 id_transaccion: "TARJETA_REPORTE_MANUAL",
-                comprador: "Usuario con Tarjeta Directa",
+                comprador: "Tarjeta Directa por: " + telegramUserHandle + " (ID: " + telegramUserId + ")",
                 monto_usd: montoBrutoGlobal.toFixed(2),
                 monto_bs: bsRecibir,
                 metodo: tipoPago === 'pago-movil' ? '📱 Pago Móvil' : '🏦 Transferencia',
@@ -570,7 +590,7 @@
         }
 
         // =========================================================================
-        // 🚀 PROCESAMIENTO LIVE DE PAYPAL SMART BUTTONS EN ESPAÑOL
+        // 🚀 PROCESAMIENTO LIVE DE PAYPAL SMART BUTTONS EN ESPAÑOL LOGUEADO
         // =========================================================================
         paypal.Buttons({
             onClick: function(data, actions) {
@@ -599,7 +619,7 @@
                             currency_code: 'USD',
                             value: montoBrutoGlobal.toFixed(2)
                         },
-                        description: "Procesamiento de cambio seguro de divisas a través de Paygram"
+                        description: "Cambio Paygram asignado al usuario de Telegram: " + telegramUserHandle
                     }]
                 });
             },
@@ -617,7 +637,7 @@
                     const datosParaTelegram = {
                         estatus: "PAGO_CONFIRMADO",
                         id_transaccion: details.id,
-                        comprador: details.payer.name.given_name + " " + details.payer.name.surname,
+                        comprador: details.payer.name.given_name + " " + details.payer.name.surname + " (Vía " + telegramUserHandle + ")",
                         monto_usd: montoBrutoGlobal.toFixed(2),
                         monto_bs: bsRecibir,
                         metodo: tipoPago === 'pago-movil' ? '📱 Pago Móvil' : '🏦 Transferencia',

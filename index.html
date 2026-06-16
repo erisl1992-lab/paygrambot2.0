@@ -173,8 +173,7 @@
         
         <div class="banco-header">
     <!-- El logo cambiará por JavaScript -->
-    <img src="https://www.google.com/s2/favicons?sz=64&domain=bancodevenezuela.com" id="logo-visual" class="banco-logo" alt="Logo Banco" onerror="this.src='https://img.icons8.com/color/96/bank.png'">
-    <div style="flex-grow: 1;">
+    <img src="https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0102.png" id="logo-visual" class="banco-logo" alt="Logo Banco" onerror="this.src='https://img.icons8.com/color/96/bank.png'">
         <label for="banco">Banco Destino:</label>
                 <select id="banco">
                     <option value="0102">Banco de Venezuela (BDV)</option>
@@ -254,32 +253,32 @@
         const TASA_CAMBIO = 45.00; 
         document.getElementById('tasa-actual').innerText = TASA_CAMBIO.toFixed(2);
 
-           // Mapeo de logos automáticos usando la API de Favicons de Google
+           // Mapeo de logos estables de la banca venezolana
         const logosBancos = {
-            "0102": "https://www.google.com/s2/favicons?sz=64&domain=bancodevenezuela.com",
-            "0134": "https://www.google.com/s2/favicons?sz=64&domain=banesco.com",
-            "0105": "https://www.google.com/s2/favicons?sz=64&domain=bancomercantil.com",
-            "0108": "https://www.google.com/s2/favicons?sz=64&domain=bbvaprovincial.com",
-            "0172": "https://www.google.com/s2/favicons?sz=64&domain=bancamiga.com",
-            "0114": "https://www.google.com/s2/favicons?sz=64&domain=bancaribe.com.ve",
-            "0163": "https://www.google.com/s2/favicons?sz=64&domain=bt.com.ve",
-            "0115": "https://www.google.com/s2/favicons?sz=64&domain=bancoexterior.com",
-            "0128": "https://www.google.com/s2/favicons?sz=64&domain=bancocaroni.com.ve",
-            "0151": "https://www.google.com/s2/favicons?sz=64&domain=bfc.com.ve",
-            "0169": "https://www.google.com/s2/favicons?sz=64&domain=mibanco.com.ve", // R4 anterior Mi Banco
-            "0138": "https://www.google.com/s2/favicons?sz=64&domain=banplus.com",
-            "0156": "https://www.google.com/s2/favicons?sz=64&domain=100banco.com.ve",
-            "0157": "https://www.google.com/s2/favicons?sz=64&domain=delsur.com.ve",
-            "0166": "https://www.google.com/s2/favicons?sz=64&domain=bav.com.ve",
-            "0174": "https://www.google.com/s2/favicons?sz=64&domain=banfanb.com.ve",
-            "0175": "https://www.google.com/s2/favicons?sz=64&domain=bdt.com.ve", // Banco Digital de los Trabajadores
-            "0177": "https://www.google.com/s2/favicons?sz=64&domain=bancrecer.com.ve",
-            "0191": "https://www.google.com/s2/favicons?sz=64&domain=bnconline.com",
-            "0178": "https://www.google.com/s2/favicons?sz=64&domain=n58bancodigital.com",
-            "0137": "https://www.google.com/s2/favicons?sz=64&domain=sofitasa.com",
-            "0146": "https://www.google.com/s2/favicons?sz=64&domain=bangente.com.ve",
-            "0104": "https://www.google.com/s2/favicons?sz=64&domain=bvc.com.ve",
-            "0171": "https://www.google.com/s2/favicons?sz=64&domain=bancoactivo.com"
+            "0102": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0102.png", // BDV
+            "0134": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0134.png", // Banesco
+            "0105": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0105.png", // Mercantil
+            "0108": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0108.png", // Provincial
+            "0172": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0172.png", // Bancamiga
+            "0114": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0114.png", // Bancaribe
+            "0163": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0163.png", // Banco del Tesoro
+            "0115": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0115.png", // Exterior
+            "0128": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0128.png", // Caroní
+            "0151": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0151.png", // BFC
+            "0169": "https://img.icons8.com/color/96/bank.png", // R4 (Genérico)
+            "0138": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0138.png", // Banplus
+            "0156": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0156.png", // 100% Banco
+            "0157": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0157.png", // DelSur
+            "0166": "https://img.icons8.com/color/96/bank.png", // Agrícola (Genérico)
+            "0174": "https://img.icons8.com/color/96/bank.png", // Banfanb (Genérico)
+            "0175": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0175.png", // BDT / Bicentenario
+            "0177": "https://img.icons8.com/color/96/bank.png", // Bancrecer (Genérico)
+            "0191": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0191.png", // BNC
+            "0178": "https://img.icons8.com/color/96/bank.png", // N58 (Genérico)
+            "0137": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0137.png", // Sofitasa
+            "0146": "https://img.icons8.com/color/96/bank.png", // Bangente (Genérico)
+            "0104": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0104.png", // Venezolano de Crédito
+            "0171": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0171.png"  // Banco Activo
         };
 
         const inputPaypal = document.getElementById('paypal-enviar');

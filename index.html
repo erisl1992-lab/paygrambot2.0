@@ -172,10 +172,10 @@
         <h2>Datos de Recepción</h2>
         
         <div class="banco-header">
-            <!-- El logo cambiará por JavaScript -->
-            <img src="https://logo.clearbit.com/bancodevenezuela.com" id="logo-visual" class="banco-logo" alt="Logo Banco">
-            <div style="flex-grow: 1;">
-                <label for="banco">Banco Destino:</label>
+    <!-- El logo cambiará por JavaScript -->
+    <img src="https://www.google.com/s2/favicons?sz=64&domain=bancodevenezuela.com" id="logo-visual" class="banco-logo" alt="Logo Banco" onerror="this.src='https://img.icons8.com/color/96/bank.png'">
+    <div style="flex-grow: 1;">
+        <label for="banco">Banco Destino:</label>
                 <select id="banco">
                     <option value="0102">Banco de Venezuela (BDV)</option>
                     <option value="0134">Banesco</option>
@@ -254,32 +254,32 @@
         const TASA_CAMBIO = 45.00; 
         document.getElementById('tasa-actual').innerText = TASA_CAMBIO.toFixed(2);
 
-            // Mapeo de logos usando DuckDuckGo Icons (Servicio activo y gratuito)
+           // Mapeo de logos automáticos usando la API de Favicons de Google
         const logosBancos = {
-            "0102": "https://external-content.duckduckgo.com/ip3/bancodevenezuela.com.ico",
-            "0134": "https://external-content.duckduckgo.com/ip3/banesco.com.ico",
-            "0105": "https://external-content.duckduckgo.com/ip3/bancomercantil.com.ico",
-            "0108": "https://external-content.duckduckgo.com/ip3/bbvaprovincial.com.ico",
-            "0172": "https://external-content.duckduckgo.com/ip3/bancamiga.com.ico",
-            "0114": "https://external-content.duckduckgo.com/ip3/bancaribe.com.ve.ico",
-            "0163": "https://external-content.duckduckgo.com/ip3/bt.com.ve.ico",
-            "0115": "https://external-content.duckduckgo.com/ip3/bancoexterior.com.ico",
-            "0128": "https://external-content.duckduckgo.com/ip3/bancocaroni.com.ve.ico",
-            "0151": "https://external-content.duckduckgo.com/ip3/bfc.com.ve.ico",
-            "0169": "https://img.icons8.com/color/96/bank.png", // R4 utiliza genérico temporal
-            "0138": "https://external-content.duckduckgo.com/ip3/banplus.com.ico",
-            "0156": "https://external-content.duckduckgo.com/ip3/100banco.com.ve.ico",
-            "0157": "https://external-content.duckduckgo.com/ip3/delsur.com.ve.ico",
-            "0166": "https://img.icons8.com/color/96/bank.png", // Agrícola genérico
-            "0174": "https://external-content.duckduckgo.com/ip3/banfanb.com.ve.ico",
-            "0175": "https://external-content.duckduckgo.com/ip3/bdt.com.ve.ico", // Nuevo BDT
-            "0177": "https://external-content.duckduckgo.com/ip3/bancrecer.com.ve.ico",
-            "0191": "https://external-content.duckduckgo.com/ip3/bnconline.com.ico",
-            "0178": "https://external-content.duckduckgo.com/ip3/n58bancodigital.com.ico",
-            "0137": "https://external-content.duckduckgo.com/ip3/sofitasa.com.ico",
-            "0146": "https://external-content.duckduckgo.com/ip3/bangente.com.ve.ico",
-            "0104": "https://external-content.duckduckgo.com/ip3/bvc.com.ve.ico",
-            "0171": "https://external-content.duckduckgo.com/ip3/bancoactivo.com.ico"
+            "0102": "https://www.google.com/s2/favicons?sz=64&domain=bancodevenezuela.com",
+            "0134": "https://www.google.com/s2/favicons?sz=64&domain=banesco.com",
+            "0105": "https://www.google.com/s2/favicons?sz=64&domain=bancomercantil.com",
+            "0108": "https://www.google.com/s2/favicons?sz=64&domain=bbvaprovincial.com",
+            "0172": "https://www.google.com/s2/favicons?sz=64&domain=bancamiga.com",
+            "0114": "https://www.google.com/s2/favicons?sz=64&domain=bancaribe.com.ve",
+            "0163": "https://www.google.com/s2/favicons?sz=64&domain=bt.com.ve",
+            "0115": "https://www.google.com/s2/favicons?sz=64&domain=bancoexterior.com",
+            "0128": "https://www.google.com/s2/favicons?sz=64&domain=bancocaroni.com.ve",
+            "0151": "https://www.google.com/s2/favicons?sz=64&domain=bfc.com.ve",
+            "0169": "https://www.google.com/s2/favicons?sz=64&domain=mibanco.com.ve", // R4 anterior Mi Banco
+            "0138": "https://www.google.com/s2/favicons?sz=64&domain=banplus.com",
+            "0156": "https://www.google.com/s2/favicons?sz=64&domain=100banco.com.ve",
+            "0157": "https://www.google.com/s2/favicons?sz=64&domain=delsur.com.ve",
+            "0166": "https://www.google.com/s2/favicons?sz=64&domain=bav.com.ve",
+            "0174": "https://www.google.com/s2/favicons?sz=64&domain=banfanb.com.ve",
+            "0175": "https://www.google.com/s2/favicons?sz=64&domain=bdt.com.ve", // Banco Digital de los Trabajadores
+            "0177": "https://www.google.com/s2/favicons?sz=64&domain=bancrecer.com.ve",
+            "0191": "https://www.google.com/s2/favicons?sz=64&domain=bnconline.com",
+            "0178": "https://www.google.com/s2/favicons?sz=64&domain=n58bancodigital.com",
+            "0137": "https://www.google.com/s2/favicons?sz=64&domain=sofitasa.com",
+            "0146": "https://www.google.com/s2/favicons?sz=64&domain=bangente.com.ve",
+            "0104": "https://www.google.com/s2/favicons?sz=64&domain=bvc.com.ve",
+            "0171": "https://www.google.com/s2/favicons?sz=64&domain=bancoactivo.com"
         };
 
         const inputPaypal = document.getElementById('paypal-enviar');

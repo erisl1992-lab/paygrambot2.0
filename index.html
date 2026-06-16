@@ -173,8 +173,7 @@
         
         <div class="banco-header">
     <!-- El logo cambiará por JavaScript -->
-    <img src="https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0102.png" id="logo-visual" class="banco-logo" alt="Logo Banco" onerror="this.src='https://img.icons8.com/color/96/bank.png'">
-        <label for="banco">Banco Destino:</label>
+<img src="https://bancos-ve-logos.vercel.app/logos/0102.png" id="logo-visual" class="banco-logo" alt="Logo Banco" onerror="this.src='https://img.icons8.com/color/96/bank.png'">        <label for="banco">Banco Destino:</label>
                 <select id="banco">
                     <option value="0102">Banco de Venezuela (BDV)</option>
                     <option value="0134">Banesco</option>
@@ -253,34 +252,33 @@
         const TASA_CAMBIO = 45.00; 
         document.getElementById('tasa-actual').innerText = TASA_CAMBIO.toFixed(2);
 
-           // Mapeo de logos estables de la banca venezolana
+          // Mapeo de logos oficiales de la banca venezolana (Servidor Fintech dedicado)
         const logosBancos = {
-            "0102": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0102.png", // BDV
-            "0134": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0134.png", // Banesco
-            "0105": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0105.png", // Mercantil
-            "0108": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0108.png", // Provincial
-            "0172": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0172.png", // Bancamiga
-            "0114": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0114.png", // Bancaribe
-            "0163": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0163.png", // Banco del Tesoro
-            "0115": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0115.png", // Exterior
-            "0128": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0128.png", // Caroní
-            "0151": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0151.png", // BFC
-            "0169": "https://img.icons8.com/color/96/bank.png", // R4 (Genérico)
-            "0138": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0138.png", // Banplus
-            "0156": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0156.png", // 100% Banco
-            "0157": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0157.png", // DelSur
-            "0166": "https://img.icons8.com/color/96/bank.png", // Agrícola (Genérico)
-            "0174": "https://img.icons8.com/color/96/bank.png", // Banfanb (Genérico)
-            "0175": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0175.png", // BDT / Bicentenario
-            "0177": "https://img.icons8.com/color/96/bank.png", // Bancrecer (Genérico)
-            "0191": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0191.png", // BNC
-            "0178": "https://img.icons8.com/color/96/bank.png", // N58 (Genérico)
-            "0137": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0137.png", // Sofitasa
-            "0146": "https://img.icons8.com/color/96/bank.png", // Bangente (Genérico)
-            "0104": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0104.png", // Venezolano de Crédito
-            "0171": "https://raw.githubusercontent.com/veplus/logos-bancos/main/bancos/0171.png"  // Banco Activo
+            "0102": "https://bancos-ve-logos.vercel.app/logos/0102.png", // BDV
+            "0134": "https://bancos-ve-logos.vercel.app/logos/0134.png", // Banesco
+            "0105": "https://bancos-ve-logos.vercel.app/logos/0105.png", // Mercantil
+            "0108": "https://bancos-ve-logos.vercel.app/logos/0108.png", // Provincial
+            "0172": "https://bancos-ve-logos.vercel.app/logos/0172.png", // Bancamiga
+            "0114": "https://bancos-ve-logos.vercel.app/logos/0114.png", // Bancaribe
+            "0163": "https://bancos-ve-logos.vercel.app/logos/0163.png", // Banco del Tesoro
+            "0115": "https://bancos-ve-logos.vercel.app/logos/0115.png", // Exterior
+            "0128": "https://bancos-ve-logos.vercel.app/logos/0128.png", // Caroní
+            "0151": "https://bancos-ve-logos.vercel.app/logos/0151.png", // BFC
+            "0169": "https://bancos-ve-logos.vercel.app/logos/0169.png", // R4
+            "0138": "https://bancos-ve-logos.vercel.app/logos/0138.png", // Banplus
+            "0156": "https://bancos-ve-logos.vercel.app/logos/0156.png", // 100% Banco
+            "0157": "https://bancos-ve-logos.vercel.app/logos/0157.png", // DelSur
+            "0166": "https://bancos-ve-logos.vercel.app/logos/0166.png", // Agrícola
+            "0174": "https://bancos-ve-logos.vercel.app/logos/0174.png", // Banfanb
+            "0175": "https://bancos-ve-logos.vercel.app/logos/0175.png", // BDT
+            "0177": "https://bancos-ve-logos.vercel.app/logos/0177.png", // Bancrecer
+            "0191": "https://bancos-ve-logos.vercel.app/logos/0191.png", // BNC
+            "0178": "https://bancos-ve-logos.vercel.app/logos/0178.png", // N58
+            "0137": "https://bancos-ve-logos.vercel.app/logos/0137.png", // Sofitasa
+            "0146": "https://bancos-ve-logos.vercel.app/logos/0146.png", // Bangente
+            "0104": "https://bancos-ve-logos.vercel.app/logos/0104.png", // Venezolano de Crédito
+            "0171": "https://bancos-ve-logos.vercel.app/logos/0171.png"  // Banco Activo
         };
-
         const inputPaypal = document.getElementById('paypal-enviar');
         const txtComision = document.getElementById('comision-fee');
         const txtNeto = document.getElementById('monto-neto');

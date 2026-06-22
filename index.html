@@ -7,7 +7,7 @@
     <!-- Librería para generar PDFs Nativa -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- SDK de PayPal Optimizado para Ventanas Flotantes dentro de Mini Apps (In-App Browsers) -->
+    <!-- SDK de PayPal Optimizado para Ventanas Flotantes In-App -->
     <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&enable-funding=card&integration-date=2026-06-22"></script>
     
     <style>
@@ -16,52 +16,94 @@
             background-color: #0e1621;
             color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
         }
         .container {
             background-color: #17212b;
             border-radius: 12px;
-            padding: 25px;
+            padding: 20px;
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             position: relative;
         }
         
-        /* Encabezado con Logo Adaptado */
-        .header-container {
+        /* Layout Superior Dividido */
+        .top-navbar {
             display: flex;
-            align-items: center;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: flex-start;
             border-bottom: 1px solid #24303f;
             padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
         }
         .brand-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 15px;
-            border: 2px solid #2ea6ff;
+            width: 65px;
+            height: 45px;
+            object-fit: contain;
+            margin-right: 12px;
         }
-        .header-text h2 { margin: 0; color: #2ea6ff; font-size: 22px; }
-        .header-text p { margin: 2px 0 0 0; font-size: 13px; color: #8199b1; }
-
-        .meta-box {
-            background-color: #24303f;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            border-left: 4px solid #2ea6ff;
+        .saludo-txt {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2ea6ff;
+            margin: 0;
         }
-        .meta-box p { margin: 5px 0; font-family: monospace; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #b1c7df; font-size: 14px; }
+        .sub-txt {
+            font-size: 11px;
+            color: #8199b1;
+            margin: 2px 0 0 0;
+        }
         
-        input[type="number"], input[type="text"] {
+        .nav-right {
+            text-align: right;
+            background-color: #24303f;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            border-right: 3px solid #2ea6ff;
+            min-width: 140px;
+        }
+        .nav-right div { margin-bottom: 3px; }
+        .tg-user { color: #2ec4b6; font-weight: bold; }
+        .op-number { color: #ff9f43; font-weight: bold; }
+        .live-clock { color: #b1c7df; }
+
+        /* Controles de la Calculadora */
+        .toggle-calc-type {
+            display: flex;
+            background-color: #24303f;
+            border-radius: 6px;
+            padding: 4px;
+            margin-bottom: 15px;
+        }
+        .toggle-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #8199b1;
+            transition: all 0.2s;
+        }
+        .toggle-btn.active {
+            background-color: #2ea6ff;
+            color: #ffffff;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #b1c7df; font-size: 13px; }
+        
+        input[type="number"], input[type="text"], select {
             width: 100%;
             padding: 10px;
             border-radius: 6px;
@@ -76,23 +118,22 @@
             background-color: #1a2734;
             padding: 12px;
             border-radius: 6px;
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 10px;
+            font-size: 13px;
         }
         .info-calculo div {
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
         }
-        .total-bs { font-size: 18px; color: #2ec4b6; font-weight: bold; }
+        .total-bs { font-size: 17px; color: #2ec4b6; font-weight: bold; }
         
-        /* Módulo de Datos de Origen Ocultable */
         .registro-banco-box {
             background-color: #1a2734;
-            border: 1px solid #ff9f43;
+            border: 1px solid #24303f;
             border-radius: 8px;
             padding: 15px;
-            margin-top: 15px;
+            margin-top: 12px;
             display: none;
         }
 
@@ -101,19 +142,19 @@
             border: 1px solid #24303f;
             border-radius: 6px;
             padding: 10px;
-            margin-top: 15px;
-            font-size: 12px;
+            margin-top: 12px;
+            font-size: 11px;
             color: #b1c7df;
+            line-height: 1.4;
         }
         .checkbox-group {
             display: flex;
             align-items: flex-start;
-            margin-top: 10px;
-            font-size: 13px;
+            margin-top: 8px;
+            font-size: 12px;
         }
-        .checkbox-group input { margin-right: 8px; margin-top: 3px; }
+        .checkbox-group input { margin-right: 8px; margin-top: 2px; cursor: pointer; }
 
-        /* Aviso de Soporte Four11 */
         .four11-notice {
             background-color: #111923;
             border: 1px dashed #4b5c6e;
@@ -122,8 +163,7 @@
             text-align: center;
             padding: 8px;
             border-radius: 6px;
-            margin-top: 20px;
-            line-height: 1.3;
+            margin-top: 15px;
         }
 
         #paypal-button-container { 
@@ -140,7 +180,7 @@
             border-radius: 8px;
             text-align: center;
             display: none;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         .btn-download {
             background-color: #2ea6ff;
@@ -154,11 +194,10 @@
             width: 100%;
         }
         
-        /* Bloqueo Absoluto de Seguridad */
         .url-lock-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(23, 33, 43, 0.95);
+            background-color: rgba(23, 33, 43, 0.97);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -176,40 +215,53 @@
 <body>
 
 <div class="container">
-    <!-- Bloqueo de seguridad si faltan parámetros en URL -->
+    <!-- Bloqueo de seguridad URL -->
     <div id="url-lock" class="url-lock-overlay">
         <span style="font-size: 40px; margin-bottom: 15px;">🔒</span>
         <h3 style="color: #ff4d4d; margin: 0 0 10px 0;">Acceso Restringido</h3>
-        <p style="color: #b1c7df; font-size: 14px; margin: 0;">Esta pasarela solo puede ejecutarse de forma segura abriendo el enlace generado directamente desde tu bot de Telegram autorizado.</p>
+        <p style="color: #b1c7df; font-size: 14px; margin: 0;">Esta pasarela debe ejecutarse abriendo el enlace generado desde tu bot de Telegram autorizado.</p>
     </div>
 
-    <!-- Encabezado con tu Logo Adaptado -->
-    <div class="header-container">
-        <img class="brand-logo" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80" alt="PPABS Logo">
-        <div class="header-text">
-            <h2>Pasarela INDEX</h2>
-            <p>Servicios Logísticos Automatizados</p>
+    <!-- Layout Superior Dividido -->
+    <div class="top-navbar">
+        <div class="nav-left">
+            <!-- Enlace directo a tu imagen verbatim del repositorio local -->
+            <img class="brand-logo" src="Gemini_Generated_Image_v6oxq3v6oxq3v6ox (1).png" alt="PPABS Logo">
+            <div>
+                <p id="txt-saludo-dinamico" class="saludo-txt">☀️ ¡Hola!</p>
+                <p class="sub-txt">Servicios Logísticos</p>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div>🔹 <span id="lbl-id" class="tg-user">@---</span></div>
+            <div>🔢 <span id="lbl-op" class="op-number">#------</span></div>
+            <div>⏰ <span id="lbl-reloj" class="live-clock">00:00:00</span></div>
         </div>
     </div>
 
-    <div class="meta-box">
-        <p>👤 <strong>Usuario TG:</strong> <span id="lbl-id">Detectando...</span></p>
-        <p>🔢 <strong>Operación Activa:</strong> <span id="lbl-op" style="color: #2ea6ff;">#------</span></p>
+    <!-- Switch de Modalidad de Calculadora (Bruto vs Neto) -->
+    <div class="toggle-calc-type">
+        <div id="btn-mode-bruto" class="toggle-btn active" onclick="cambiarModoCalculo('bruto')">Monto Bruto (Enviar)</div>
+        <div id="btn-mode-neto" class="toggle-btn" onclick="cambiarModoCalculo('neto')">Monto Neto (Recibir)</div>
     </div>
 
     <div class="input-group">
-        <label for="txt-enviar">Monto de Servicio Logístico ($ USD):</label>
-        <input type="number" id="txt-enviar" value="10.00" min="10" step="0.01">
+        <label id="lbl-input-monto" for="txt-monto">Monto en Divisas ($ USD):</label>
+        <input type="number" id="txt-monto" value="10.00" min="10" step="0.01">
     </div>
 
     <div class="info-calculo">
         <div>
-            <span>Costo de Operación Logística:</span>
+            <span>Monto Bruto de Envío:</span>
+            <span id="calc-bruto">$10.00 USD</span>
+        </div>
+        <div>
+            <span>Costo de Operación Logística (Comisión):</span>
             <span id="calc-comision">$0.84 USD</span>
         </div>
         <div>
             <span>Monto Neto Procesado:</span>
-            <span id="calc-neto" style="font-weight: bold;">$9.16 USD</span>
+            <span id="calc-neto" style="font-weight: bold; color: #2ea6ff;">$9.16 USD</span>
         </div>
         <hr style="border: 0; border-top: 1px solid #24303f; margin: 10px 0;">
         <div>
@@ -218,18 +270,28 @@
         </div>
     </div>
 
-    <!-- Casilla de Verificación de Datos Bancarios (Marcada por defecto) -->
-    <div class="checkbox-group" style="background-color: #1a2734; padding: 12px; border-radius: 6px; margin-top: 15px;">
+    <!-- Casilla de Verificación Bancaria -->
+    <div class="checkbox-group" style="background-color: #1a2734; padding: 12px; border-radius: 6px; margin-top: 12px;">
         <input type="checkbox" id="chk-datos-registrados" checked onchange="toggleFormularioBanco()">
-        <label for="chk-datos-registrados" style="margin: 0; cursor: pointer; color: #2ec4b6;">✔ Mis datos de pagos están registrados</label>
+        <label for="chk-datos-registrados" style="margin: 0; cursor: pointer; color: #2ec4b6; font-weight: bold;">✔ Mis datos de pagos están registrados</label>
     </div>
 
-    <!-- Formulario Desplegable de Datos de Origen -->
+    <!-- Formulario Desplegable con Lista de Bancos (Campos Opcionales) -->
     <div id="box-registro-banco" class="registro-banco-box">
-        <h4 style="margin: 0 0 12px 0; color: #ff9f43; font-size: 14px;">📝 Registrar Datos de Origen (Pago Móvil / Transferencia)</h4>
+        <h4 style="margin: 0 0 12px 0; color: #ff9f43; font-size: 13px;">📝 Registrar Datos de Origen (Opcional)</h4>
         <div class="input-group">
             <label>Banco de Origen:</label>
-            <input type="text" id="reg-banco" placeholder="Ej: Banesco, Mercantil...">
+            <select id="reg-banco">
+                <option value="">-- Seleccione un Banco --</option>
+                <option value="BANESCO">0134 - BANESCO</option>
+                <option value="BANCO DE VENEZUELA">0102 - BANCO DE VENEZUELA</option>
+                <option value="MERCANTIL">0105 - MERCANTIL</option>
+                <option value="PROVINCIAL">0108 - BBVA PROVINCIAL</option>
+                <option value="BNC">0191 - BANCO NACIONAL DE CRÉDITO</option>
+                <option value="BOD">0116 - BANCO OCCIDENTAL DE DESCUENTO</option>
+                <option value="BANPLUS">0174 - BANPLUS</option>
+                <option value="BANCAMIGA">0172 - BANCAMIGA</option>
+            </select>
         </div>
         <div class="input-group">
             <label>Cédula / RIF del Titular:</label>
@@ -241,27 +303,25 @@
         </div>
     </div>
 
-    <!-- Cláusula Legal de No Reembolso -->
     <div class="terms-container">
-        📋 <strong>Cláusula Obligatoria:</strong> Una vez procesado exitosamente, este servicio logístico se considera ejecutado y <u>no está sujeto a reembolsos ni devoluciones</u>.
+        📋 <strong>Cláusula Obligatoria:</strong> Una vez procesado exitosamente, este servicio logístico se considera ejecutado y <u>notificado</u>. No está sujeto a reembolsos ni devoluciones.
         <div class="checkbox-group">
             <input type="checkbox" id="chk-terms" onchange="validarActivacionBoton()">
             <label for="chk-terms">Acepto los Términos de Servicio y la política de no reembolso.</label>
         </div>
     </div>
 
-    <!-- Aviso Obligatorio de Soporte Comercial Four11 -->
     <div class="four11-notice">
         ℹ️ Los servicios de PPABS son soportados por <strong>four11</strong> y serán registrados estrictamente como pagos de servicios logísticos.
     </div>
 
-    <!-- Botones de Pago Inteligentes (Interactúan directamente in-app) -->
+    <!-- Botones de Pago -->
     <div id="paypal-button-container"></div>
 
     <div id="box-exito" class="success-box">
         🎉 <strong>¡SERVICIO PROCESADO!</strong> 🎉<br><br>
         <button class="btn-download" onclick="descargarRecibo()">📥 Descargar Recibo Oficial (PDF)</button>
-        <p style="font-size: 12px; color: #b1c7df; margin-top: 15px;">Regresa a Telegram y pulsa <strong>"🎯 Reportar Pago Completado"</strong>.</p>
+        <p style="font-size: 11px; color: #b1c7df; margin-top: 12px;">Regresa a Telegram y pulsa <strong>"🎯 Reportar Pago Completado"</strong>.</p>
     </div>
 </div>
 
@@ -282,12 +342,10 @@
         </tr>
         <tr id="pdf-row-banco" style="display:none;">
             <td colspan="2" style="background-color: #f9f9f9; padding: 8px; border: 1px solid #ddd; margin-top: 5px;">
-                <strong>Datos de Origen Registrados:</strong> <span id="pdf-datos-origen"></span>
+                <strong>Datos de Origen Opcionales:</strong> <span id="pdf-datos-origen"></span>
             </td>
         </tr>
-        <tr>
-            <td colspan="2"><strong>ID Transacción PayPal:</strong> <span id="pdf-tx"></span></td>
-        </tr>
+        <tr><td colspan="2"><strong>ID Transacción PayPal:</strong> <span id="pdf-tx"></span></td></tr>
     </table>
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px;">
         <thead>
@@ -298,65 +356,101 @@
         </tbody>
     </table>
     <div style="background-color: #fff3cd; border: 1px solid #ffeba2; padding: 15px; border-radius: 5px; font-size: 11px; color: #856404;">
-        ⚠️ <strong>POLÍTICA EXPRESA:</strong> Este documento certifica la contratación de servicios logísticos inmediatos y no tangibles. **NO ESTÁ SUJETO A REEMBOLSO NI DEVOLUCIÓN DE FONDOS**.
+        ⚠️ <strong>POLÍTICA EXPRESA:</strong> Este documento certifica la contratación de servicios logísticos de ejecución inmediata. **NO ESTÁ SUJETO A REEMBOLSO**.
     </div>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // Captura de parámetros desde el Bot de Telegram
     const userTg = urlParams.get('user') || urlParams.get('id'); 
     const nroOrden = urlParams.get('op');
 
-    // Validación estricta de parámetros
+    let modoCalculoActual = 'bruto'; // 'bruto' o 'neto'
+    const TASA_CAMBIO = 45.50; 
+    let globalPaypalTxId = "";
+    let globalMontoBruto = "10.00";
+
+    // 1. Reloj Digital e Inyección de Tiempos
+    function iniciarRelojSaludo() {
+        // Ajustar huso horario fijo de Venezuela (UTC-4)
+        const ahoraUTC = new Date();
+        const fechaVzla = new Date(ahoraUTC.getTime() + (ahoraUTC.getTimezoneOffset() * 60000) + (3600000 * -4));
+        
+        const horas = fechaVzla.getHours();
+        const mins = String(fechaVzla.getMinutes()).padStart(2, '0');
+        const segs = String(fechaVzla.getSeconds()).padStart(2, '0');
+        
+        document.getElementById('lbl-reloj').innerText = `${String(horas).padStart(2, '0')}:${mins}:${segs}`;
+
+        // Saludo dinámico inferior
+        let saludo = "🌙 ¡Buenas noches!";
+        if (horas >= 5 && horas < 12) saludo = "☀️ ¡Buenos días!";
+        else if (horas >= 12 && horas < 19) saludo = "Base ⛅ ¡Buenas tardes!";
+        document.getElementById('txt-saludo-dinamico').innerText = saludo;
+    }
+    setInterval(iniciarRelojSaludo, 1000);
+    iniciarRelojSaludo();
+
+    // Validación estricta por URL
     if (userTg && nroOrden) {
         document.getElementById('url-lock').style.display = 'none';
         document.getElementById('lbl-id').innerText = userTg.startsWith('@') ? userTg : '@' + userTg;
         document.getElementById('lbl-op').innerText = "#" + nroOrden;
     }
 
-    const TASA_CAMBIO = 45.50; 
-    let globalPaypalTxId = "";
-    let globalMonto = "0.00";
-
-    function calcularComisiones() {
-        const montoBruto = parseFloat(document.getElementById('txt-enviar').value) || 0;
-        const comision = (montoBruto * 0.054) + 0.30;
-        const montoNeto = montoBruto - comision;
-        const totalBs = montoNeto > 0 ? (montoNeto * TASA_CAMBIO) : 0;
-
-        document.getElementById('calc-comision').innerText = `$${comision.toFixed(2)} USD`;
-        document.getElementById('calc-neto').innerText = `$${montoNeto > 0 ? montoNeto.toFixed(2) : "0.00"} USD`;
-        document.getElementById('calc-bs').innerText = `${totalBs.toLocaleString("es-VE", {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs`;
+    // 2. Lógica Matemática Matemática (Bruto vs Neto)
+    function cambiarModoCalculo(modo) {
+        modoCalculoActual = modo;
+        document.getElementById('btn-mode-bruto').classList.toggle('active', modo === 'bruto');
+        document.getElementById('btn-mode-neto').classList.toggle('active', modo === 'neto');
         
-        globalMonto = montoBruto.toFixed(2);
+        document.getElementById('lbl-input-monto').innerText = modo === 'bruto' 
+            ? "Monto Bruto a enviar en PayPal ($ USD):" 
+            : "Monto Neto exacto que deseas recibir ($ USD):";
+            
+        calcularMatematica();
     }
 
-    document.getElementById('txt-enviar').addEventListener('input', calcularComisiones);
-    calcularComisiones();
+    function calcularMatematica() {
+        const inputVal = parseFloat(document.getElementById('txt-monto').value) || 0;
+        let bruto = 0, comision = 0, neto = 0;
+
+        if (modoCalculoActual === 'bruto') {
+            bruto = inputVal;
+            comision = (bruto * 0.054) + 0.30;
+            neto = bruto - comision;
+        } else {
+            // Ecuación inversa para despejar el Neto: Bruto = (Neto + 0.30) / (1 - 0.054)
+            neto = inputVal;
+            if (neto > 0) {
+                bruto = (neto + 0.30) / (1 - 0.054);
+                comision = bruto - neto;
+            }
+        }
+
+        const totalBs = neto > 0 ? (neto * TASA_CAMBIO) : 0;
+
+        document.getElementById('calc-bruto').innerText = `$${bruto > 0 ? bruto.toFixed(2) : "0.00"} USD`;
+        document.getElementById('calc-comision').innerText = `$${comision > 0 ? comision.toFixed(2) : "0.00"} USD`;
+        document.getElementById('calc-neto').innerText = `$${neto > 0 ? neto.toFixed(2) : "0.00"} USD`;
+        document.getElementById('calc-bs').innerText = `${totalBs.toLocaleString("es-VE", {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs`;
+        
+        globalMontoBruto = bruto.toFixed(2);
+    }
+
+    document.getElementById('txt-monto').addEventListener('input', calcularMatematica);
+    calcularMatematica();
 
     function toggleFormularioBanco() {
         const chk = document.getElementById('chk-datos-registrados');
-        const box = document.getElementById('box-registro-banco');
-        box.style.display = chk.checked ? 'none' : 'block';
-        validarActivacionBoton();
+        document.getElementById('box-registro-banco').style.display = chk.checked ? 'none' : 'block';
     }
 
     function validarActivacionBoton() {
         const chkTerms = document.getElementById('chk-terms').checked;
-        const chkDatos = document.getElementById('chk-datos-registrados').checked;
-        
-        let formularioValido = true;
-        if (!chkDatos) {
-            const banco = document.getElementById('reg-banco').value.trim();
-            const cedula = document.getElementById('reg-cedula').value.trim();
-            const tlf = document.getElementById('reg-telefono').value.trim();
-            if (!banco || !cedula || !tlf) formularioValido = false;
-        }
-
         const paypalBox = document.getElementById('paypal-button-container');
-        if (chkTerms && formularioValido) {
+        
+        if (chkTerms) {
             paypalBox.style.pointerEvents = 'auto';
             paypalBox.style.opacity = '1';
         } else {
@@ -365,25 +459,25 @@
         }
     }
 
-    document.getElementById('reg-banco').addEventListener('input', validarActivacionBoton);
-    document.getElementById('reg-cedula').addEventListener('input', validarActivacionBoton);
-    document.getElementById('reg-telefono').addEventListener('input', validarActivacionBoton);
-
-    // Inicialización de la ventana modal integrada de PayPal
     paypal.Buttons({
         style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' },
         createOrder: function(data, actions) {
-            const montoPagar = document.getElementById('txt-enviar').value;
+            // Forzar recálculo antes de despachar el cobro
+            calcularMatematica();
             
             let datosOrigenString = "Datos ya registrados";
-            if (!document.getElementById('chk-datos-registrados').checked) {
-                datosOrigenString = "Orig: " + document.getElementById('reg-banco').value + " | Doc: " + document.getElementById('reg-cedula').value + " | Tlf: " + document.getElementById('reg-telefono').value;
+            const banco = document.getElementById('reg-banco').value;
+            const cedula = document.getElementById('reg-cedula').value.trim();
+            const tlf = document.getElementById('reg-telefono').value.trim();
+
+            if (!document.getElementById('chk-datos-registrados').checked && (banco || cedula || tlf)) {
+                datosOrigenString = `Orig: ${banco || 'S/B'} | Doc: ${cedula || 'S/D'} | Tlf: ${tlf || 'S/T'}`;
             }
 
             return actions.order.create({
                 purchase_units: [{
                     invoice_id: "PPABS-" + nroOrden + "-" + userTg.replace('@',''), 
-                    amount: { value: montoPagar, currency_code: "USD" },
+                    amount: { value: globalMontoBruto, currency_code: "USD" },
                     description: "Orden de servicio logístico PPABS #" + nroOrden + " | User: " + userTg + " | " + datosOrigenString
                 }]
             });
@@ -405,13 +499,14 @@
         document.getElementById('pdf-id').innerText = userTg;
         document.getElementById('pdf-tx').innerText = globalPaypalTxId;
         document.getElementById('pdf-fecha').innerText = new Date().toLocaleDateString();
-        document.getElementById('pdf-monto').innerText = "$" + globalMonto + " USD";
+        document.getElementById('pdf-monto').innerText = "$" + globalMontoBruto + " USD";
 
-        if (!document.getElementById('chk-datos-registrados').checked) {
-            const banco = document.getElementById('reg-banco').value;
-            const cedula = document.getElementById('reg-cedula').value;
-            const tlf = document.getElementById('reg-telefono').value;
-            document.getElementById('pdf-datos-origen').innerText = `${banco} - ${cedula} - ${tlf}`;
+        const banco = document.getElementById('reg-banco').value;
+        const cedula = document.getElementById('reg-cedula').value.trim();
+        const tlf = document.getElementById('reg-telefono').value.trim();
+
+        if (!document.getElementById('chk-datos-registrados').checked && (banco || cedula || tlf)) {
+            document.getElementById('pdf-datos-origen').innerText = `${banco || 'S/B'} - ${cedula || 'S/D'} - ${tlf || 'S/T'}`;
             document.getElementById('pdf-row-banco').style.display = 'table-row';
         }
 

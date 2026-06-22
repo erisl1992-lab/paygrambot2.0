@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPABS - Pasarela de Servicios Logísticos</title>
+    <!-- Librería para generar PDFs Nativa -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
+    <!-- SDK de PayPal Optimizado para Ventanas Flotantes In-App -->
     <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&enable-funding=card&integration-date=2026-06-22"></script>
     
     <style>
         /* =========================================================================
-           🎨 NUEVA IDENTIDAD VISUAL: PALETA GRIS CLARO Y ACENTOS CORPORATIVOS
+           🎨 NUEVA IDENTIDAD VISUAL: PALETA GRIS CLARO Y ACENTOS CORPORATIVOS AZULES
            ========================================================================= */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -73,9 +75,42 @@
         .saludo-banner {
             font-size: 15px;
             color: #555555;
+            margin: 0;
+            padding-bottom: 4px;
+        }
+
+        .tasa-banner {
+            font-size: 13px;
+            font-weight: bold;
+            color: #002d62;
             margin: 0 0 15px 0;
             padding-bottom: 8px;
             border-bottom: 1px dashed #e1e4e8;
+        }
+
+        /* Switch de Modalidad de Calculadora (Bruto vs Neto) */
+        .toggle-calc-type {
+            display: flex;
+            background-color: #f1f3f5;
+            border-radius: 6px;
+            padding: 4px;
+            margin-bottom: 15px;
+            border: 1px solid #ccd1d9;
+        }
+        .toggle-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #495057;
+            transition: all 0.2s;
+        }
+        .toggle-btn.active {
+            background-color: #0070ba;
+            color: #ffffff;
         }
 
         .input-group { margin-bottom: 12px; }
@@ -108,7 +143,7 @@
             justify-content: space-between;
             margin-bottom: 6px;
         }
-        .total-bs { font-size: 16px; color: #2ec4b6; font-weight: bold; }
+        .total-bs { font-size: 16px; color: #0070ba; font-weight: bold; } /* Azul unificado */
         
         /* Módulo de registro bancario opcional a discreción */
         .registro-banco-box {
@@ -121,7 +156,7 @@
         }
 
         .terms-container {
-            background-color: #fff9db; /* Color de advertencia sutil */
+            background-color: #fff9db; 
             border: 1px solid #ffe3e3;
             border-radius: 6px;
             padding: 10px;
@@ -135,7 +170,7 @@
             align-items: flex-start;
             margin-top: 8px;
             font-size: 12px;
-            color: #002d62;
+            color: #0070ba; /* Azul unificado */
             font-weight: bold;
         }
         .checkbox-group input { margin-right: 8px; margin-top: 2px; cursor: pointer; }
@@ -201,6 +236,7 @@
 </head>
 <body>
 
+<!-- Cabecera Superior: Logo a la izquierda, Meta-información a la derecha -->
 <header class="sitio-header">
     <div class="contenedor-header">
         <a href="index.html" class="logo-link">
@@ -216,22 +252,39 @@
 
 <div class="main-wrapper">
     <div class="container">
+        <!-- Bloqueo de seguridad URL -->
         <div id="url-lock" class="url-lock-overlay">
             <span style="font-size: 40px; margin-bottom: 15px;">🔒</span>
             <h3 style="color: #d9534f; margin: 0 0 10px 0;">Acceso Restringido</h3>
             <p style="color: #6c757d; font-size: 13px; margin: 0;">Esta pasarela solo puede ejecutarse abriendo el enlace generado desde tu bot de Telegram autorizado.</p>
         </div>
 
+        <!-- Saludo dinámico al cliente debajo de la cabecera -->
         <div id="txt-saludo-cliente" class="saludo-banner">
-            👋 ¡Hola, bienvenido a la pasarela INDEX!
+            👋 ¡Hola, bienvenido!
+        </div>
+        
+        <!-- Contenedor de la Tasa del Día -->
+        <div class="tasa-banner">
+            📈 Tasa de cambio del día: <span id="lbl-tasa-valor" style="color: #0070ba;">0.00</span> Bs/USD
+        </div>
+
+        <!-- Switch de Modalidad de Calculadora (Bruto vs Neto) -->
+        <div class="toggle-calc-type">
+            <div id="btn-mode-bruto" class="toggle-btn active" onclick="cambiarModoCalculo('bruto')">Monto Bruto (Enviar)</div>
+            <div id="btn-mode-neto" class="toggle-btn" onclick="cambiarModoCalculo('neto')">Monto Neto (Recibir)</div>
         </div>
 
         <div class="input-group">
-            <label for="txt-monto">Monto de Servicio Logístico ($ USD):</label>
+            <label id="lbl-input-monto" for="txt-monto">Monto de Servicio Logístico ($ USD):</label>
             <input type="number" id="txt-monto" value="10.00" min="10" step="0.01">
         </div>
 
         <div class="info-calculo">
+            <div>
+                <span>Monto Bruto de Envío:</span>
+                <span id="calc-bruto">$10.00 USD</span>
+            </div>
             <div>
                 <span>Costo de Operación Logística (Comisión):</span>
                 <span id="calc-comision">$0.84 USD</span>
@@ -247,11 +300,13 @@
             </div>
         </div>
 
+        <!-- Casilla de Verificación Bancaria (Color Azul Unificado) -->
         <div class="checkbox-group" style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; margin-top: 12px; border: 1px solid #ccd1d9;">
             <input type="checkbox" id="chk-datos-registrados" checked onchange="toggleFormularioBanco()">
-            <label for="chk-datos-registrados" style="margin: 0; cursor: pointer; color: #2ec4b6;">✔ Mis datos de pagos están registrados</label>
+            <label for="chk-datos-registrados" style="margin: 0; cursor: pointer; color: #0070ba;">✔ Mis datos de pagos están registrados</label>
         </div>
 
+        <!-- Formulario Desplegable Opcional a discreción del cliente -->
         <div id="box-registro-banco" class="registro-banco-box">
             <h4 style="margin: 0 0 12px 0; color: #ff9f43; font-size: 13px;">📝 Registrar Datos de Origen (Opcional)</h4>
             <div class="input-group">
@@ -277,18 +332,21 @@
             </div>
         </div>
 
+        <!-- Casilla Obligatoria de Aceptación con Texto Legal Modificado -->
         <div class="terms-container">
-            📋 <strong>Cláusula de No Reembolso:</strong> Una vez procesado exitosamente, este servicio logístico se considera ejecutado de forma conforme y no está sujeto a ningún tipo de reembolso ni disputa.
+            📋 <strong>Términos de Servicio:</strong> Lea detenidamente la siguiente declaración de conformidad antes de proceder con el pago.
             <div class="checkbox-group">
                 <input type="checkbox" id="chk-terms" onchange="validarActivacionBoton()">
-                <label for="chk-terms" style="color: #d9534f; cursor: pointer;">Estoy de acuerdo con pagar a four11 por concepto de servicios logísticos.</label>
+                <label for="chk-terms" style="color: #d9534f; cursor: pointer; font-weight: normal;">Una vez efectuado el pago de forma exitosa en su cuenta bancaria, se considera como un servicio efectuado exitosamente y no tendrá lugar a disputa.</label>
             </div>
         </div>
 
+        <!-- Aviso de Soporte Four11 -->
         <div class="four11-notice">
             ℹ️ Los servicios de PPABS son soportados por <strong>four11</strong> y serán registrados estrictamente como pagos de servicios logísticos.
         </div>
 
+        <!-- Botones Inteligentes de PayPal -->
         <div id="paypal-button-container"></div>
 
         <div id="box-exito" class="success-box">
@@ -299,6 +357,7 @@
     </div>
 </div>
 
+<!-- PLANTILLA PDF -->
 <div id="invoice-pdf-template">
     <div style="border-bottom: 2px solid #0070ba; padding-bottom: 10px; margin-bottom: 20px;">
         <h1 style="color: #0070ba; margin: 0;">PPABS LOGISTICS</h1>
@@ -311,7 +370,7 @@
         </tr>
         <tr>
             <td><strong>Usuario Telegram:</strong> <span id="pdf-id"></span></td>
-            <td style="text-align: right;"><strong>Pasarela:</strong> PayPal In-App</td>
+            <td style="text-align: right;"><strong>Pasarela:</strong> PayPal In-App (PPABS)</td>
         </tr>
         <tr id="pdf-row-banco" style="display:none;">
             <td colspan="2" style="background-color: #f9f9f9; padding: 8px; border: 1px solid #ddd; margin-top: 5px;">
@@ -329,23 +388,28 @@
         </tbody>
     </table>
     <div style="background-color: #fff3cd; border: 1px solid #ffeba2; padding: 15px; border-radius: 5px; font-size: 11px; color: #856404;">
-        ⚠️ <strong>POLÍTICA EXPRESA CONTRATADA:</strong> Este documento certifica la ejecución inmediata de servicios logísticos intangibles. Soportado comercialmente por four11. No aplica reembolso bajo ningún concepto.
+        ⚠️ <strong>POLÍTICA EXPRESA CONTRATADA:</strong> Este documento certifica la ejecución inmediata de servicios logísticos intangibles. Soportado comercialmente por four11. Al completarse el abono bancario, el servicio queda registrado como finalizado sin derecho a reclamos ni disputas posteriores.
     </div>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const userTg = urlParams.get('user') || urlParams.get('id'); 
+    const profileName = urlParams.get('name'); // Captura del nombre del perfil
     const nroOrden = urlParams.get('op');
 
-    // Construcción del Código de Tracking Solicitado
+    // Construcción del Código de Tracking Exacto
     const trackingGlobal = "PPABS-#123340-" + (nroOrden || "000000");
 
     const TASA_CAMBIO = 45.50; 
+    let modoCalculoActual = 'bruto';
     let globalPaypalTxId = "";
     let globalMontoBruto = "10.00";
 
-    // 1. Lógica del Reloj en Tiempo Real y Saludo Dinámico
+    // Inyectar visualmente la tasa del día en el nuevo contenedor
+    document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
+
+    // 1. Lógica del Reloj en Tiempo Real y Saludo Dinámico con Fallback inteligente
     function iniciarRelojSaludo() {
         const ahoraUTC = new Date();
         const fechaVzla = new Date(ahoraUTC.getTime() + (ahoraUTC.getTimezoneOffset() * 60000) + (3600000 * -4));
@@ -360,8 +424,15 @@
         if (horas >= 5 && horas < 12) saludo = "☀️ ¡Buenos días";
         else if (horas >= 12 && horas < 19) saludo = "⛅ ¡Buenas tardes";
         
-        const formatearUser = userTg ? (userTg.startsWith('@') ? userTg : '@' + userTg) : "Usuario";
-        document.getElementById('txt-saludo-cliente').innerText = `${saludo}, ${formatearUser}! Bienvenido a la pasarela comercial INDEX.`;
+        // Validación de Legibilidad de Nombre vs ID
+        let clienteIdentificador = "Usuario";
+        if (profileName && profileName.trim() !== "" && !/^[_\W]+$/.test(profileName)) {
+            clienteIdentificador = profileName;
+        } else if (userTg) {
+            clienteIdentificador = userTg.startsWith('@') ? userTg : '@' + userTg;
+        }
+
+        document.getElementById('txt-saludo-cliente').innerText = `${saludo}, ${clienteIdentificador}! Bienvenido a la plataforma comercial PPABS.`;
     }
     setInterval(iniciarRelojSaludo, 1000);
     iniciarRelojSaludo();
@@ -375,13 +446,38 @@
         document.getElementById('lbl-track-top').innerText = trackingGlobal;
     }
 
-    // 2. Lógica Matemática de Conversión Contable
+    // 2. Lógica Matemática Avanzada de la Calculadora (Bruto / Neto)
+    function cambiarModoCalculo(modo) {
+        modoCalculoActual = modo;
+        document.getElementById('btn-mode-bruto').classList.toggle('active', modo === 'bruto');
+        document.getElementById('btn-mode-neto').classList.toggle('active', modo === 'neto');
+        
+        document.getElementById('lbl-input-monto').innerText = modo === 'bruto' 
+            ? "Monto Bruto a enviar en PayPal ($ USD):" 
+            : "Monto Neto exacto que deseas recibir ($ USD):";
+            
+        calcularMatematica();
+    }
+
     function calcularMatematica() {
-        const bruto = parseFloat(document.getElementById('txt-monto').value) || 0;
-        const comision = (bruto * 0.054) + 0.30;
-        const neto = bruto - comision;
+        const inputVal = parseFloat(document.getElementById('txt-monto').value) || 0;
+        let bruto = 0, comision = 0, neto = 0;
+
+        if (modoCalculoActual === 'bruto') {
+            bruto = inputVal;
+            comision = (bruto * 0.054) + 0.30;
+            neto = bruto - comision;
+        } else {
+            neto = inputVal;
+            if (neto > 0) {
+                bruto = (neto + 0.30) / (1 - 0.054);
+                comision = bruto - neto;
+            }
+        }
+
         const totalBs = neto > 0 ? (neto * TASA_CAMBIO) : 0;
 
+        document.getElementById('calc-bruto').innerText = `$${bruto > 0 ? bruto.toFixed(2) : "0.00"} USD`;
         document.getElementById('calc-comision').innerText = `$${comision > 0 ? comision.toFixed(2) : "0.00"} USD`;
         document.getElementById('calc-neto').innerText = `$${neto > 0 ? neto.toFixed(2) : "0.00"} USD`;
         document.getElementById('calc-bs').innerText = `${totalBs.toLocaleString("es-VE", {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs`;
@@ -396,7 +492,6 @@
         document.getElementById('box-registro-banco').style.display = chk.checked ? 'none' : 'block';
     }
 
-    // El botón se habilita obligatoriamente al marcar la casilla de acuerdo con four11
     function validarActivacionBoton() {
         const chkTerms = document.getElementById('chk-terms').checked;
         const paypalBox = document.getElementById('paypal-button-container');
@@ -427,7 +522,6 @@
 
             return actions.order.create({
                 purchase_units: [{
-                    // Sincronización del Invoice ID y la descripción en tu historial de PayPal
                     invoice_id: "PPABS-" + nroOrden + "-" + userTg.replace('@',''), 
                     amount: { value: globalMontoBruto, currency_code: "USD" },
                     description: "Tracking: " + trackingGlobal + " | Soporte: four11 | User: " + userTg + " | " + datosOrigenString

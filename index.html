@@ -4,30 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPABS - Pasarela de Servicios Logísticos</title>
-    <!-- Librería para generar PDFs Nativa -->
+    
+    <!-- Librería oficial de Telegram Web Apps -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- html2pdf para generar PDFs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- SDK de PayPal Optimizado para Ventanas Flotantes In-App -->
+    <!-- SDK de PayPal (sandbox por defecto, cambiar client-id en producción) -->
     <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&enable-funding=card&integration-date=2026-06-22"></script>
     
     <style>
         /* =========================================================================
-           🎨 NUEVA IDENTIDAD VISUAL: PALETA GRIS CLARO Y ACENTOS CORPORATIVOS AZULES
+           🎨 ESTILOS MEJORADOS CON SOPORTE PARA TEMA OSCURO/CLARO DE TELEGRAM
            ========================================================================= */
+        :root {
+            --bg-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e1e4e8;
+            --shadow-color: rgba(0,0,0,0.06);
+            --accent: #0070ba;
+            --accent-hover: #005c99;
+            --danger: #d9534f;
+            --success: #28a745;
+            --warning-bg: #fff9db;
+            --warning-border: #ffe3e3;
+            --card-bg: #f8f9fa;
+            --toggle-bg: #f1f3f5;
+            --toggle-active: #0070ba;
+            --toggle-text: #495057;
+            --input-bg: #fcfdfd;
+            --four11-bg: #f1f3f5;
+            --four11-border: #adb5bd;
+            --maintenance-bg: #fff3cd;
+            --maintenance-border: #ffc107;
+            --maintenance-text: #856404;
+        }
+
+        /* Tema oscuro (detectado automáticamente por Telegram) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1c1c1e;
+                --container-bg: #2c2c2e;
+                --text-color: #e5e5e5;
+                --border-color: #3a3a3c;
+                --shadow-color: rgba(0,0,0,0.3);
+                --card-bg: #3a3a3c;
+                --toggle-bg: #3a3a3c;
+                --toggle-text: #d1d1d6;
+                --input-bg: #2c2c2e;
+                --warning-bg: #3a2a1a;
+                --warning-border: #5a3a2a;
+                --four11-bg: #2c2c2e;
+                --four11-border: #5a5a5c;
+                --maintenance-bg: #3a2a1a;
+                --maintenance-border: #b8860b;
+                --maintenance-text: #f0d080;
+            }
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9; /* Fondo gris claro amigable visualmente */
-            color: #333333;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s, color 0.3s;
         }
-        
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--container-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: auto;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.loading { border-left: 4px solid var(--accent); }
+        .toast-icon { font-size: 20px; }
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
         .sitio-header {
-            background-color: #ffffff; /* Fondo blanco para que combine con el logo */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sutil sombra abajo */
+            background-color: var(--container-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .contenedor-header {
@@ -39,10 +137,9 @@
             align-items: center;
         }
 
-        /* Control e integración de tu logo.png */
         .logo-img {
-            height: 45px; 
-            width: auto;  
+            height: 45px;
+            width: auto;
             display: block;
         }
 
@@ -50,52 +147,66 @@
             text-align: right;
             font-family: monospace;
             font-size: 11px;
-            color: #002d62; /* Azul marino corporativo */
+            color: var(--accent);
             line-height: 1.3;
         }
-        .info-bold { font-weight: bold; color: #0070ba; }
+        .info-bold { font-weight: bold; color: var(--accent); }
 
         .main-wrapper {
             padding: 15px;
             display: flex;
             justify-content: center;
         }
-        
+
         .container {
-            background-color: #ffffff; /* Contenedor blanco limpio */
+            background-color: var(--container-bg);
             border-radius: 12px;
             padding: 20px;
             width: 100%;
             max-width: 460px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
             position: relative;
-            border: 1px solid #e1e4e8;
         }
-        
+
         .saludo-banner {
             font-size: 15px;
-            color: #555555;
-            margin: 0;
-            padding-bottom: 4px;
+            color: var(--text-color);
+            margin: 0 0 4px 0;
+            opacity: 0.9;
         }
 
         .tasa-banner {
             font-size: 13px;
             font-weight: bold;
-            color: #002d62;
+            color: var(--accent);
             margin: 0 0 15px 0;
             padding-bottom: 8px;
-            border-bottom: 1px dashed #e1e4e8;
+            border-bottom: 1px dashed var(--border-color);
         }
 
-        /* Switch de Modalidad de Calculadora (Bruto vs Neto) */
+        /* Mensaje de mantenimiento */
+        .maintenance-banner {
+            background-color: var(--maintenance-bg);
+            border: 2px solid var(--maintenance-border);
+            color: var(--maintenance-text);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+            font-size: 14px;
+        }
+        .maintenance-banner .icon { font-size: 24px; display: block; margin-bottom: 4px; }
+
         .toggle-calc-type {
             display: flex;
-            background-color: #f1f3f5;
+            background-color: var(--toggle-bg);
             border-radius: 6px;
             padding: 4px;
             margin-bottom: 15px;
-            border: 1px solid #ccd1d9;
+            border: 1px solid var(--border-color);
         }
         .toggle-btn {
             flex: 1;
@@ -105,50 +216,48 @@
             font-weight: bold;
             cursor: pointer;
             border-radius: 4px;
-            color: #495057;
+            color: var(--toggle-text);
             transition: all 0.2s;
         }
         .toggle-btn.active {
-            background-color: #0070ba;
+            background-color: var(--toggle-active);
             color: #ffffff;
         }
 
         .input-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #002d62; font-size: 13px; }
-        
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--accent); font-size: 13px; }
+
         input[type="number"], input[type="text"], select {
             width: 100%;
             padding: 10px;
             border-radius: 6px;
-            border: 1px solid #ccd1d9;
-            background-color: #fcfdfd;
-            color: #333333;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
             font-size: 14px;
             box-sizing: border-box;
             transition: border-color 0.2s;
         }
-        input:focus, select:focus { border-color: #0070ba; outline: none; }
-        
-        /* Contenedor de Desglose Matemático */
+        input:focus, select:focus { border-color: var(--accent); outline: none; }
+
         .info-calculo {
-            background-color: #f8f9fa;
+            background-color: var(--card-bg);
             padding: 12px;
             border-radius: 6px;
             margin-top: 10px;
             font-size: 13px;
-            border: 1px solid #e1e4e8;
+            border: 1px solid var(--border-color);
         }
         .info-calculo div {
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
         }
-        .total-bs { font-size: 16px; color: #0070ba; font-weight: bold; } /* Azul unificado */
-        
-        /* Módulo de registro bancario opcional a discreción */
+        .total-bs { font-size: 16px; color: var(--accent); font-weight: bold; }
+
         .registro-banco-box {
-            background-color: #f8f9fa;
-            border: 1px solid #ccd1d9;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 12px;
             margin-top: 12px;
@@ -156,13 +265,13 @@
         }
 
         .terms-container {
-            background-color: #fff9db; 
-            border: 1px solid #ffe3e3;
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
             border-radius: 6px;
             padding: 10px;
             margin-top: 12px;
             font-size: 11px;
-            color: #495057;
+            color: var(--text-color);
             line-height: 1.4;
         }
         .checkbox-group {
@@ -170,29 +279,39 @@
             align-items: flex-start;
             margin-top: 8px;
             font-size: 12px;
-            color: #0070ba; /* Azul unificado */
+            color: var(--accent);
             font-weight: bold;
         }
         .checkbox-group input { margin-right: 8px; margin-top: 2px; cursor: pointer; }
 
-        /* Aviso Obligatorio Four11 */
         .four11-notice {
-            background-color: #f1f3f5;
-            border: 1px dashed #adb5bd;
-            color: #495057;
+            background-color: var(--four11-bg);
+            border: 1px dashed var(--four11-border);
+            color: var(--text-color);
             font-size: 11px;
             text-align: center;
             padding: 8px;
             border-radius: 6px;
             margin-top: 15px;
+            opacity: 0.8;
         }
 
-        #paypal-button-container { 
-            margin-top: 15px; 
-            pointer-events: none; 
-            opacity: 0.2; 
+        #paypal-button-container {
+            margin-top: 15px;
+            pointer-events: none;
+            opacity: 0.2;
+            transition: opacity 0.3s, pointer-events 0.3s;
         }
-        
+        #paypal-button-container.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
+        #paypal-button-container.disabled {
+            pointer-events: none;
+            opacity: 0.3;
+            filter: grayscale(0.8);
+        }
+
         .success-box {
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
@@ -204,7 +323,7 @@
             margin-top: 15px;
         }
         .btn-download {
-            background-color: #0070ba;
+            background-color: var(--accent);
             color: white;
             border: none;
             padding: 10px 15px;
@@ -213,13 +332,14 @@
             cursor: pointer;
             margin-top: 10px;
             width: 100%;
+            transition: background-color 0.2s;
         }
-        
-        /* Capa de Bloqueo de URL */
+        .btn-download:hover { background-color: var(--accent-hover); }
+
         .url-lock-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #f4f6f9;
+            background-color: var(--bg-color);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -232,44 +352,73 @@
         }
 
         #invoice-pdf-template { display: none; background: white; color: #333; padding: 30px; font-family: Arial, sans-serif; }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .btn-close-app {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.6;
+            padding: 0 5px;
+        }
+        .btn-close-app:hover { opacity: 1; }
     </style>
 </head>
 <body>
 
-<!-- Cabecera Superior: Logo a la izquierda, Meta-información a la derecha -->
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
 <header class="sitio-header">
     <div class="contenedor-header">
         <a href="index.html" class="logo-link">
-            <img src="logo.png" alt="Logo de ppabs" class="logo-img">
+            <img src="logo.png" alt="Logo de ppabs" class="logo-img" onerror="this.style.display='none'">
         </a>
         <div class="nav-right-info">
             <div>ID: <span id="lbl-id-top" class="info-bold">-------</span></div>
             <div>TRACKING: <span id="lbl-track-top" class="info-bold">#------</span></div>
             <div>HORA: <span id="lbl-reloj" style="font-weight: bold;">00:00:00</span></div>
+            <button class="btn-close-app" onclick="cerrarApp()" title="Cerrar">✕</button>
         </div>
     </div>
 </header>
 
 <div class="main-wrapper">
-    <div class="container">
-        <!-- Bloqueo de seguridad URL -->
+    <div class="container" id="mainContainer">
+        <!-- Bloqueo de seguridad (se oculta si hay datos válidos) -->
         <div id="url-lock" class="url-lock-overlay">
             <span style="font-size: 40px; margin-bottom: 15px;">🔒</span>
-            <h3 style="color: #d9534f; margin: 0 0 10px 0;">Acceso Restringido</h3>
-            <p style="color: #6c757d; font-size: 13px; margin: 0;">Esta pasarela solo puede ejecutarse abriendo el enlace generado desde tu bot de Telegram autorizado.</p>
+            <h3 style="color: var(--danger); margin: 0 0 10px 0;">Acceso Restringido</h3>
+            <p style="color: var(--text-color); font-size: 13px; margin: 0;">Esta pasarela solo puede ejecutarse desde Telegram.</p>
         </div>
 
-        <!-- Saludo dinámico al cliente debajo de la cabecera -->
-        <div id="txt-saludo-cliente" class="saludo-banner">
-            👋 ¡Hola, bienvenido!
+        <!-- BANNER DE MANTENIMIENTO (se muestra según horario) -->
+        <div id="maintenance-banner" class="maintenance-banner">
+            <span class="icon">🔧</span>
+            <span id="maintenance-msg">Pasarela en mantenimiento programado. Horario: 9:30 PM - 6:00 AM (UTC-4).</span>
         </div>
+
+        <div id="txt-saludo-cliente" class="saludo-banner">👋 ¡Hola, bienvenido!</div>
         
-        <!-- Contenedor de la Tasa del Día -->
         <div class="tasa-banner">
-            📈 Tasa de cambio del día: <span id="lbl-tasa-valor" style="color: #0070ba;">0.00</span> Bs/USD
+            📈 Tasa de cambio del día: <span id="lbl-tasa-valor" style="color: var(--accent);">0.00</span> Bs/USD
         </div>
 
-        <!-- Switch de Modalidad de Calculadora (Bruto vs Neto) -->
         <div class="toggle-calc-type">
             <div id="btn-mode-bruto" class="toggle-btn active" onclick="cambiarModoCalculo('bruto')">Monto Bruto (Enviar)</div>
             <div id="btn-mode-neto" class="toggle-btn" onclick="cambiarModoCalculo('neto')">Monto Neto (Recibir)</div>
@@ -281,32 +430,18 @@
         </div>
 
         <div class="info-calculo">
-            <div>
-                <span>Monto Bruto de Envío:</span>
-                <span id="calc-bruto">$10.00 USD</span>
-            </div>
-            <div>
-                <span>Costo de Operación Logística (Comisión):</span>
-                <span id="calc-comision">$0.84 USD</span>
-            </div>
-            <div>
-                <span>Monto Neto Procesado:</span>
-                <span id="calc-neto" style="font-weight: bold; color: #0070ba;">$9.16 USD</span>
-            </div>
-            <hr style="border: 0; border-top: 1px solid #e1e4e8; margin: 10px 0;">
-            <div>
-                <span class="total-bs">Compensación estimada (Bs):</span>
-                <span id="calc-bs" class="total-bs">0.00 Bs</span>
-            </div>
+            <div><span>Monto Bruto de Envío:</span> <span id="calc-bruto">$10.00 USD</span></div>
+            <div><span>Costo de Operación Logística (Comisión):</span> <span id="calc-comision">$0.84 USD</span></div>
+            <div><span>Monto Neto Procesado:</span> <span id="calc-neto" style="font-weight: bold; color: var(--accent);">$9.16 USD</span></div>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+            <div><span class="total-bs">Compensación estimada (Bs):</span> <span id="calc-bs" class="total-bs">0.00 Bs</span></div>
         </div>
 
-        <!-- Casilla de Verificación Bancaria (Color Azul Unificado) -->
-        <div class="checkbox-group" style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; margin-top: 12px; border: 1px solid #ccd1d9;">
+        <div class="checkbox-group" style="background-color: var(--card-bg); padding: 12px; border-radius: 6px; margin-top: 12px; border: 1px solid var(--border-color);">
             <input type="checkbox" id="chk-datos-registrados" checked onchange="toggleFormularioBanco()">
-            <label for="chk-datos-registrados" style="margin: 0; cursor: pointer; color: #0070ba;">✔ Mis datos de pagos están registrados</label>
+            <label for="chk-datos-registrados" style="margin: 0; cursor: pointer; color: var(--accent);">✔ Mis datos de pagos están registrados</label>
         </div>
 
-        <!-- Formulario Desplegable Opcional a discreción del cliente -->
         <div id="box-registro-banco" class="registro-banco-box">
             <h4 style="margin: 0 0 12px 0; color: #ff9f43; font-size: 13px;">📝 Registrar Datos de Origen (Opcional)</h4>
             <div class="input-group">
@@ -349,22 +484,19 @@
             </div>
         </div>
 
-        <!-- Casilla Obligatoria de Aceptación con Texto Legal Modificado -->
         <div class="terms-container">
             📋 <strong>Términos de Servicio:</strong> Lea detenidamente la siguiente declaración de conformidad antes de proceder con el pago.
             <div class="checkbox-group">
                 <input type="checkbox" id="chk-terms" onchange="validarActivacionBoton()">
-                <label for="chk-terms" style="color: #d9534f; cursor: pointer; font-weight: normal;">Una vez efectuado el pago de forma exitosa en su cuenta bancaria, se considera como un servicio efectuado exitosamente y no tendrá lugar a disputa.</label>
+                <label for="chk-terms" style="color: var(--danger); cursor: pointer; font-weight: normal;">Una vez efectuado el pago de forma exitosa en su cuenta bancaria, se considera como un servicio efectuado exitosamente y no tendrá lugar a disputa.</label>
             </div>
         </div>
 
-        <!-- Aviso de Soporte Four11 -->
         <div class="four11-notice">
             ℹ️ Los servicios de PPABS son soportados por <strong>four11</strong> y serán registrados estrictamente como pagos de servicios logísticos.
         </div>
 
-        <!-- Botones Inteligentes de PayPal -->
-        <div id="paypal-button-container"></div>
+        <div id="paypal-button-container" class="disabled"></div>
 
         <div id="box-exito" class="success-box">
             🎉 <strong>¡SERVICIO PROCESADO CON ÉXITO!</strong> 🎉<br><br>
@@ -381,14 +513,8 @@
         <p style="margin: 5px 0; font-size: 12px; color: #666;">Soportado comercialmente por four11</p>
     </div>
     <table style="width: 100%; font-size: 14px; margin-bottom: 20px;">
-        <tr>
-            <td><strong>Código Tracking Global:</strong> <span id="pdf-track"></span></td>
-            <td style="text-align: right;"><strong>Fecha:</strong> <span id="pdf-fecha"></span></td>
-        </tr>
-        <tr>
-            <td><strong>Usuario Telegram:</strong> <span id="pdf-id"></span></td>
-            <td style="text-align: right;"><strong>Pasarela:</strong> PayPal In-App (PPABS)</td>
-        </tr>
+        <tr><td><strong>Código Tracking Global:</strong> <span id="pdf-track"></span></td><td style="text-align: right;"><strong>Fecha:</strong> <span id="pdf-fecha"></span></td></tr>
+        <tr><td><strong>Usuario Telegram:</strong> <span id="pdf-id"></span></td><td style="text-align: right;"><strong>Pasarela:</strong> PayPal In-App (PPABS)</td></tr>
         <tr id="pdf-row-banco" style="display:none;">
             <td colspan="2" style="background-color: #f9f9f9; padding: 8px; border: 1px solid #ddd; margin-top: 5px;">
                 <strong>Datos de Origen Opcionales:</strong> <span id="pdf-datos-origen"></span>
@@ -397,9 +523,7 @@
         <tr><td colspan="2"><strong>ID Transacción PayPal:</strong> <span id="pdf-tx"></span></td></tr>
     </table>
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px;">
-        <thead>
-            <tr style="background-color: #f2f2f2;"><th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Descripción del Concepto</th><th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Total Bruto</th></tr>
-        </thead>
+        <thead><tr style="background-color: #f2f2f2;"><th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Descripción del Concepto</th><th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Total Bruto</th></tr></thead>
         <tbody>
             <tr><td style="padding: 10px; border: 1px solid #ddd;">Contratación de Servicio Logístico Integral PPABS</td><td style="padding: 10px; border: 1px solid #ddd; text-align: right;" id="pdf-monto"></td></tr>
         </tbody>
@@ -410,74 +534,171 @@
 </div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const userTg = urlParams.get('user') || urlParams.get('id'); 
-    const profileName = urlParams.get('name'); // Captura del nombre del perfil
-    const nroOrden = urlParams.get('op');
+    // ============================================================
+    // 1. INICIALIZACIÓN DE TELEGRAM WEB APP Y DATOS DE USUARIO
+    // ============================================================
+    const tg = window.Telegram?.WebApp;
+    let userData = null;
+    let userTg = null;
+    let profileName = null;
+    let nroOrden = null;
 
-    // Construcción del Código de Tracking Exacto
-    const trackingGlobal = "PPABS-#123340-" + (nroOrden || "000000");
+    // Función para obtener datos del usuario (prioriza Telegram Web App, fallback URL)
+    function obtenerDatosUsuario() {
+        // Intentar obtener de Telegram Web App
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            userData = user;
+            userTg = user.username ? '@' + user.username : user.id.toString();
+            profileName = user.first_name || (user.username ? user.username : 'Usuario');
+            return true;
+        }
 
-    // Captura el parámetro de la tasa enviado por el bot, de lo contrario usa una de respaldo (45.50)
-const tasaParam = urlParams.get('tasa');
-const TASA_CAMBIO = tasaParam && !isNaN(tasaParam) ? parseFloat(tasaParam) : 45.50;
+        // Fallback: parámetros de URL (para pruebas locales o si no se carga la librería)
+        const params = new URLSearchParams(window.location.search);
+        const urlUser = params.get('user') || params.get('id');
+        const urlName = params.get('name');
+        const urlOp = params.get('op');
 
-// Inyectar visualmente la tasa del día en el contenedor superior del HTML
-document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
-    let modoCalculoActual = 'bruto';
-    let globalPaypalTxId = "";
-    let globalMontoBruto = "10.00";
+        if (urlUser && urlOp) {
+            userTg = urlUser.startsWith('@') ? urlUser : '@' + urlUser;
+            profileName = urlName && urlName.trim() !== '' ? urlName : userTg;
+            nroOrden = urlOp;
+            return true;
+        }
 
-    // Inyectar visualmente la tasa del día en el nuevo contenedor
-    document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
+        return false;
+    }
 
-    // 1. Lógica del Reloj en Tiempo Real y Saludo Dinámico con Fallback inteligente
-    function iniciarRelojSaludo() {
-        const ahoraUTC = new Date();
-        const fechaVzla = new Date(ahoraUTC.getTime() + (ahoraUTC.getTimezoneOffset() * 60000) + (3600000 * -4));
-        
-        const horas = fechaVzla.getHours();
-        const mins = String(fechaVzla.getMinutes()).padStart(2, '0');
-        const segs = String(fechaVzla.getSeconds()).padStart(2, '0');
-        
-        document.getElementById('lbl-reloj').innerText = `${String(horas).padStart(2, '0')}:${mins}:${segs}`;
+    // Ejecutar al cargar
+    const datosValidos = obtenerDatosUsuario();
 
+    // Si no hay datos válidos, mostrar bloqueo y no continuar
+    if (!datosValidos) {
+        document.getElementById('url-lock').style.display = 'flex';
+        document.querySelectorAll('input, select, button').forEach(el => el.disabled = true);
+    } else {
+        document.getElementById('url-lock').style.display = 'none';
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        nroOrden = params.get('op') || '000000';
+
+        document.getElementById('lbl-id-top').innerText = userTg;
+        const trackingGlobal = "PPABS-#123340-" + nroOrden;
+        document.getElementById('lbl-track-top').innerText = trackingGlobal;
+        window.trackingGlobal = trackingGlobal;
+
+        const ahora = new Date();
+        const horas = ahora.getHours();
         let saludo = "🌙 ¡Buenas noches";
         if (horas >= 5 && horas < 12) saludo = "☀️ ¡Buenos días";
         else if (horas >= 12 && horas < 19) saludo = "⛅ ¡Buenas tardes";
-        
-        // Validación de Legibilidad de Nombre vs ID
-        let clienteIdentificador = "Usuario";
-        if (profileName && profileName.trim() !== "" && !/^[_\W]+$/.test(profileName)) {
-            clienteIdentificador = profileName;
-        } else if (userTg) {
-            clienteIdentificador = userTg.startsWith('@') ? userTg : '@' + userTg;
+        document.getElementById('txt-saludo-cliente').innerText = `${saludo}, ${profileName}! Bienvenido a la plataforma comercial PPABS.`;
+
+        const tasaParam = params.get('tasa');
+        const TASA_CAMBIO = tasaParam && !isNaN(tasaParam) ? parseFloat(tasaParam) : 45.50;
+        window.TASA_CAMBIO = TASA_CAMBIO;
+        document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
+    }
+
+    // ============================================================
+    // 2. RELOJ EN TIEMPO REAL Y CONTROL DE MANTENIMIENTO (UTC-4)
+    // ============================================================
+    function obtenerHoraUTC4() {
+        const ahora = new Date();
+        // Ajustar a UTC-4 (Venezuela)
+        const offset = -4 * 60; // minutos
+        const localMs = ahora.getTime();
+        const utcMs = localMs + (ahora.getTimezoneOffset() * 60000);
+        const utc4Ms = utcMs + (offset * 60000);
+        return new Date(utc4Ms);
+    }
+
+    function estaEnMantenimiento() {
+        const hora = obtenerHoraUTC4();
+        const horas = hora.getHours();
+        const minutos = hora.getMinutes();
+        // Rango: 21:30 (9:30 PM) a 06:00 (6:00 AM)
+        const inicio = 21 * 60 + 30; // 21:30 en minutos
+        const fin = 6 * 60;          // 6:00 en minutos
+        const actual = horas * 60 + minutos;
+
+        if (inicio <= fin) {
+            // Rango normal (ej: 22:00 a 5:00)
+            return actual >= inicio && actual < fin;
+        } else {
+            // Rango que cruza medianoche (ej: 21:30 a 6:00)
+            return actual >= inicio || actual < fin;
         }
-
-        document.getElementById('txt-saludo-cliente').innerText = `${saludo}, ${clienteIdentificador}! Bienvenido a la plataforma comercial PPABS.`;
-    }
-    setInterval(iniciarRelojSaludo, 1000);
-    iniciarRelojSaludo();
-
-    // Validación y Desbloqueo Estricto de Parámetros URL
-    if (userTg && nroOrden) {
-        document.getElementById('url-lock').style.display = 'none';
-        
-        const txtUser = userTg.startsWith('@') ? userTg : '@' + userTg;
-        document.getElementById('lbl-id-top').innerText = txtUser;
-        document.getElementById('lbl-track-top').innerText = trackingGlobal;
     }
 
-    // 2. Lógica Matemática Avanzada de la Calculadora (Bruto / Neto)
+    function actualizarMantenimiento() {
+        const enMant = estaEnMantenimiento();
+        const banner = document.getElementById('maintenance-banner');
+        const paypalContainer = document.getElementById('paypal-button-container');
+        const chkTerms = document.getElementById('chk-terms');
+        const txtMonto = document.getElementById('txt-monto');
+
+        if (enMant) {
+            banner.style.display = 'block';
+            // Deshabilitar PayPal
+            paypalContainer.classList.add('disabled');
+            paypalContainer.classList.remove('active');
+            // Desmarcar y deshabilitar checkbox de términos para que no se pueda activar
+            chkTerms.checked = false;
+            chkTerms.disabled = true;
+            txtMonto.disabled = true;
+            // También deshabilitar el toggle de cálculo (opcional)
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.style.pointerEvents = 'none');
+        } else {
+            banner.style.display = 'none';
+            paypalContainer.classList.remove('disabled');
+            // Restaurar habilitación solo si los términos están marcados
+            chkTerms.disabled = false;
+            txtMonto.disabled = false;
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.style.pointerEvents = 'auto');
+            // Si los términos ya estaban marcados, activar PayPal
+            if (chkTerms.checked) {
+                paypalContainer.classList.add('active');
+            } else {
+                paypalContainer.classList.remove('active');
+            }
+        }
+    }
+
+    // Actualizar cada 30 segundos (para que el banner se oculte/muestre dinámicamente)
+    setInterval(actualizarMantenimiento, 30000);
+    // Ejecutar al inicio
+    actualizarMantenimiento();
+
+    // También actualizar el reloj cada segundo
+    function actualizarReloj() {
+        const hora = obtenerHoraUTC4();
+        const horas = String(hora.getHours()).padStart(2, '0');
+        const mins = String(hora.getMinutes()).padStart(2, '0');
+        const segs = String(hora.getSeconds()).padStart(2, '0');
+        document.getElementById('lbl-reloj').innerText = `${horas}:${mins}:${segs}`;
+    }
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
+
+    // ============================================================
+    // 3. LÓGICA DE CÁLCULO (Bruto / Neto)
+    // ============================================================
+    let modoCalculoActual = 'bruto';
+    let globalMontoBruto = "10.00";
+
     function cambiarModoCalculo(modo) {
         modoCalculoActual = modo;
         document.getElementById('btn-mode-bruto').classList.toggle('active', modo === 'bruto');
         document.getElementById('btn-mode-neto').classList.toggle('active', modo === 'neto');
-        
         document.getElementById('lbl-input-monto').innerText = modo === 'bruto' 
             ? "Monto Bruto a enviar en PayPal ($ USD):" 
             : "Monto Neto exacto que deseas recibir ($ USD):";
-            
         calcularMatematica();
     }
 
@@ -497,7 +718,7 @@ document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
             }
         }
 
-        const totalBs = neto > 0 ? (neto * TASA_CAMBIO) : 0;
+        const totalBs = neto > 0 ? (neto * window.TASA_CAMBIO) : 0;
 
         document.getElementById('calc-bruto').innerText = `$${bruto > 0 ? bruto.toFixed(2) : "0.00"} USD`;
         document.getElementById('calc-comision').innerText = `$${comision > 0 ? comision.toFixed(2) : "0.00"} USD`;
@@ -517,58 +738,203 @@ document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
     function validarActivacionBoton() {
         const chkTerms = document.getElementById('chk-terms').checked;
         const paypalBox = document.getElementById('paypal-button-container');
-        
-        if (chkTerms) {
-            paypalBox.style.pointerEvents = 'auto';
-            paypalBox.style.opacity = '1';
+        // Solo activar si NO está en mantenimiento y el checkbox está marcado
+        if (!estaEnMantenimiento() && chkTerms) {
+            paypalBox.classList.add('active');
         } else {
-            paypalBox.style.pointerEvents = 'none';
-            paypalBox.style.opacity = '0.2';
+            paypalBox.classList.remove('active');
         }
     }
 
-    // 3. Renderizado de Pasarela PayPal con Registro del Tracking
-    paypal.Buttons({
-        style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' },
-        createOrder: function(data, actions) {
-            calcularMatematica();
-            
-            let datosOrigenString = "Datos ya registrados";
-            const banco = document.getElementById('reg-banco').value;
-            const cedula = document.getElementById('reg-cedula').value.trim();
-            const tlf = document.getElementById('reg-telefono').value.trim();
+    // ============================================================
+    // 4. SISTEMA DE NOTIFICACIONES (TOAST)
+    // ============================================================
+    function mostrarToast(mensaje, tipo = 'info', duracion = 4000) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${tipo}`;
+        let icono = 'ℹ️';
+        if (tipo === 'success') icono = '✅';
+        else if (tipo === 'error') icono = '❌';
+        else if (tipo === 'loading') icono = '⏳';
+        toast.innerHTML = `<span class="toast-icon">${icono}</span><span>${mensaje}</span><button class="toast-close">&times;</button>`;
+        container.appendChild(toast);
 
-            if (!document.getElementById('chk-datos-registrados').checked && (banco || cedula || tlf)) {
-                datosOrigenString = `Orig: ${banco || 'S/B'} | Doc: ${cedula || 'S/D'} | Tlf: ${tlf || 'S/T'}`;
-            }
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
 
-            return actions.order.create({
-                purchase_units: [{
-                    invoice_id: "PPABS-" + nroOrden + "-" + userTg.replace('@',''), 
-                    amount: { value: globalMontoBruto, currency_code: "USD" },
-                    description: "Tracking: " + trackingGlobal + " | Soporte: four11 | User: " + userTg + " | " + datosOrigenString
-                }]
-            });
-        },
-        onApprove: function(data, actions) {
-            return actions.order.capture().then(function(details) {
-                document.getElementById('paypal-button-container').style.display = 'none';
-                document.getElementById('chk-terms').disabled = true;
-                document.getElementById('chk-datos-registrados').disabled = true;
-                
-                globalPaypalTxId = details.purchase_units[0].payments.captures[0].id;
-                document.getElementById('box-exito').style.display = 'block';
-            });
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        });
+
+        if (duracion > 0) {
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, duracion);
         }
-    }).render('#paypal-button-container');
 
-    // 4. Compilación del Recibo de Compra Digital en PDF
+        return toast;
+    }
+
+    function cerrarToast(toast) {
+        if (toast) {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }
+    }
+
+    // ============================================================
+    // 5. FUNCIÓN PARA REGISTRAR PAGO EN EL BACKEND (Railway)
+    // ============================================================
+    async function registrarPago(txId, monto, usuario, tracking) {
+        const urlBackend = 'https://tu-backend.railway.app/api/pagar'; // Cambiar por tu endpoint real
+        const payload = {
+            transaction_id: txId,
+            amount: monto,
+            user: usuario,
+            tracking: tracking,
+            order: nroOrden,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            const response = await fetch(urlBackend, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            const data = await response.json();
+            return { success: true, data };
+        } catch (error) {
+            console.error('Error al registrar pago:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // ============================================================
+    // 6. CONFIGURACIÓN DE PAYPAL (con verificación de mantenimiento)
+    // ============================================================
+    function initPayPal() {
+        paypal.Buttons({
+            style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' },
+            createOrder: function(data, actions) {
+                // Bloquear si está en mantenimiento (por si acaso)
+                if (estaEnMantenimiento()) {
+                    mostrarToast('Servicio en mantenimiento. Intente más tarde.', 'error', 5000);
+                    return Promise.reject('Mantenimiento activo');
+                }
+
+                const toastLoading = mostrarToast('Creando orden de pago...', 'loading', 0);
+                calcularMatematica();
+
+                let datosOrigenString = "Datos ya registrados";
+                const banco = document.getElementById('reg-banco').value;
+                const cedula = document.getElementById('reg-cedula').value.trim();
+                const tlf = document.getElementById('reg-telefono').value.trim();
+
+                if (!document.getElementById('chk-datos-registrados').checked && (banco || cedula || tlf)) {
+                    datosOrigenString = `Orig: ${banco || 'S/B'} | Doc: ${cedula || 'S/D'} | Tlf: ${tlf || 'S/T'}`;
+                }
+
+                const tracking = window.trackingGlobal || 'PPABS-#123340-' + nroOrden;
+                const descripcion = `Tracking: ${tracking} | Soporte: four11 | User: ${userTg} | ${datosOrigenString}`;
+
+                return actions.order.create({
+                    purchase_units: [{
+                        invoice_id: "PPABS-" + nroOrden + "-" + (userTg ? userTg.replace('@','') : 'anon'),
+                        amount: { value: globalMontoBruto, currency_code: "USD" },
+                        description: descripcion
+                    }]
+                }).then(order => {
+                    cerrarToast(toastLoading);
+                    return order;
+                }).catch(err => {
+                    cerrarToast(toastLoading);
+                    mostrarToast('Error al crear la orden: ' + err.message, 'error');
+                    throw err;
+                });
+            },
+            onApprove: function(data, actions) {
+                if (estaEnMantenimiento()) {
+                    mostrarToast('Servicio en mantenimiento. No se puede procesar el pago.', 'error', 5000);
+                    return;
+                }
+                const toastPago = mostrarToast('Procesando pago...', 'loading', 0);
+                return actions.order.capture().then(async function(details) {
+                    cerrarToast(toastPago);
+                    
+                    const txId = details.purchase_units[0].payments.captures[0].id;
+                    const monto = details.purchase_units[0].amount.value;
+
+                    document.getElementById('paypal-button-container').style.display = 'none';
+                    document.getElementById('chk-terms').disabled = true;
+                    document.getElementById('chk-datos-registrados').disabled = true;
+                    document.getElementById('box-exito').style.display = 'block';
+                    mostrarToast('¡Pago completado con éxito!', 'success');
+
+                    const registro = await registrarPago(txId, monto, userTg, window.trackingGlobal);
+                    if (registro.success) {
+                        console.log('Pago registrado en backend:', registro.data);
+                    } else {
+                        mostrarToast('Pago OK, pero falló registro en servidor: ' + registro.error, 'error', 6000);
+                    }
+
+                    if (tg) {
+                        tg.sendData(JSON.stringify({
+                            action: 'pago_exitoso',
+                            order: nroOrden,
+                            transaction: txId,
+                            amount: monto,
+                            user: userTg
+                        }));
+                    }
+
+                    window.globalPaypalTxId = txId;
+                    window.globalMontoBruto = monto;
+
+                }).catch(err => {
+                    cerrarToast(toastPago);
+                    mostrarToast('Error al capturar el pago: ' + err.message, 'error');
+                    console.error(err);
+                });
+            },
+            onCancel: function(data) {
+                mostrarToast('Pago cancelado por el usuario.', 'info', 3000);
+            },
+            onError: function(err) {
+                mostrarToast('Error en la pasarela de pago: ' + err.message, 'error');
+                console.error(err);
+            }
+        }).render('#paypal-button-container');
+    }
+
+    // Inicializar PayPal solo si hay datos válidos
+    if (datosValidos && typeof paypal !== 'undefined') {
+        initPayPal();
+    } else if (datosValidos) {
+        const checkPayPal = setInterval(() => {
+            if (typeof paypal !== 'undefined') {
+                clearInterval(checkPayPal);
+                initPayPal();
+            }
+        }, 500);
+    }
+
+    // ============================================================
+    // 7. GENERACIÓN DE PDF
+    // ============================================================
     function descargarRecibo() {
-        document.getElementById('pdf-track').innerText = trackingGlobal;
-        document.getElementById('pdf-id').innerText = userTg;
-        document.getElementById('pdf-tx').innerText = globalPaypalTxId;
+        document.getElementById('pdf-track').innerText = window.trackingGlobal || 'N/A';
+        document.getElementById('pdf-id').innerText = userTg || 'Usuario';
+        document.getElementById('pdf-tx').innerText = window.globalPaypalTxId || 'N/A';
         document.getElementById('pdf-fecha').innerText = new Date().toLocaleDateString();
-        document.getElementById('pdf-monto').innerText = "$" + globalMontoBruto + " USD";
+        document.getElementById('pdf-monto').innerText = "$" + (window.globalMontoBruto || '0.00') + " USD";
 
         const banco = document.getElementById('reg-banco').value;
         const cedula = document.getElementById('reg-cedula').value.trim();
@@ -577,6 +943,8 @@ document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
         if (!document.getElementById('chk-datos-registrados').checked && (banco || cedula || tlf)) {
             document.getElementById('pdf-datos-origen').innerText = `${banco || 'S/B'} - ${cedula || 'S/D'} - ${tlf || 'S/T'}`;
             document.getElementById('pdf-row-banco').style.display = 'table-row';
+        } else {
+            document.getElementById('pdf-row-banco').style.display = 'none';
         }
 
         const elemento = document.getElementById('invoice-pdf-template');
@@ -592,9 +960,32 @@ document.getElementById('lbl-tasa-valor').innerText = TASA_CAMBIO.toFixed(2);
 
         html2pdf().from(elemento).set(opciones).save().then(() => {
             elemento.style.display = 'none';
+            mostrarToast('PDF descargado correctamente', 'success');
+        }).catch(err => {
+            elemento.style.display = 'none';
+            mostrarToast('Error al generar PDF: ' + err.message, 'error');
         });
     }
-</script>
 
+    // ============================================================
+    // 8. CERRAR APP
+    // ============================================================
+    function cerrarApp() {
+        if (tg) {
+            tg.close();
+        } else {
+            window.close();
+        }
+    }
+
+    // Si Telegram provee el botón de cerrar, lo usamos; si no, el nuestro.
+    if (tg) {
+        tg.onEvent('view_port_changed', function(data) {
+            // Opcional: reaccionar a cambios de tamaño
+        });
+    }
+
+    console.log('PPABS Mini App v3.0 (con mantenimiento) cargada correctamente.');
+</script>
 </body>
 </html>
